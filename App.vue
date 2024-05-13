@@ -64,62 +64,55 @@
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      title: 'My To Do App',
-      newTask: '',
-      tasks: []
-    }
-  },
-  methods: {
-    addTask() {
-      if (this.newTask.length < 1) return
-      if (this.tasks.length === 0) {
+<script setup>
+  import { ref, reactive, computed } from 'vue'
+
+  const title = 'My To Do App'
+  const newTask = ref('')
+  const tasks = reactive([])
+  // methods from object api
+  const addTask = () => {
+    if (newTask.value.length < 1) return
+      if (tasks.length === 0) {
         // If no tasks, add the new task with index 1
-        this.tasks.push({
+        tasks.push({
           id: 1,
-          name: this.newTask,
+          name: newTask.value,
           finished: false
         });
-      } else {
-        // Find the index of the last task and add the new task after it
-        const lastTaskIndex = this.tasks[this.tasks.length - 1].id;
-        this.tasks.push({
-          id: lastTaskIndex + 1,
-          name: this.newTask,
-          finished: false
-        });
-      }
-      this.newTask = ''
-    },
-    removeTask(taskID) {
-      const taskIndex = this.tasks.findIndex(task => task.id === taskID);
-      if (taskIndex !== -1) {
-        this.tasks[taskIndex].finished = true;
-        this.tasks.splice(taskIndex, 1);
-      }
-    },
-    finishTask(task) {
-      task.finished = !task.finished
-    },
-    resetTaskList() {
-      this.tasks = []; 
+    } else {
+      // Find the index of the last task and add the new task after it
+      const lastTaskIndex = tasks[tasks.length - 1].id;
+      tasks.push({
+        id: lastTaskIndex + 1,
+        name: newTask.value,
+        finished: false
+      });
     }
-  },
-  computed: {
-    allTasks() {
-      return this.tasks.length
-    },
-    completedTasksCount() {
-      return this.tasks.filter(task => task.finished).length;
-    },
-    uncompletedTasksCount() {
-      return this.tasks.filter(task => !task.finished).length;
+    newTask.value = ''
+  };
+
+  const removeTask = (taskId) => {
+    const taskIndex = tasks.findIndex(task => task.id === taskId);
+    if (taskIndex !== -1) {
+      tasks[taskIndex].finished = true;
+      tasks.splice(taskIndex, 1);
     }
-  }
-}
+  };
+
+  const finishTask = (task) => {
+    task.finished = !task.finished;
+  };
+
+  const resetTaskList = () => {
+    tasks.splice(0, tasks.length);
+  };
+
+  // computed properties
+  const allTasks = computed(() => tasks.length);
+  const completedTasksCount = computed(() => tasks.filter(task => task.finished).length);
+  const uncompletedTasksCount = computed(() => tasks.filter(task => !task.finished).length);
+
 </script>
 
 <style>
